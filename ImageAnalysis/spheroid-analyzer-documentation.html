@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spheroid Analyzer Documentation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.8.0/mermaid.min.js"></script>
+    <style>
+        :root {
+            /* Light theme (default) */
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --bg-color: #f5f7fa;
+            --card-bg: white;
+            --text-color: #333;
+            --light-text: #f5f7fa;
+            --border-color: #ddd;
+            --code-bg: #f0f0f0;
+            --highlight-bg: #f8f9fa;
+            --highlight-border: #3498db;
+            --table-header-bg: #3498db;
+            --table-header-text: white;
+            --table-row-alt: #f2f2f2;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --header-bg: #2c3e50;
+            --header-text: #f5f7fa;
+            --footer-bg: #2c3e50;
+            --footer-text: #f5f7fa;
+        }
+        
+        /* Dark theme */
+        [data-theme="dark"] {
+            --primary-color: #61dafb;
+            --secondary-color: #bb86fc;
+            --accent-color: #ff7675;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --light-text: #f5f7fa;
+            --border-color: #333;
+            --code-bg: #2d2d2d;
+            --highlight-bg: #2d2d2d;
+            --highlight-border: #61dafb;
+            --table-header-bg: #2c2c2c;
+            --table-header-text: #e0e0e0;
+            --table-row-alt: #1a1a1a;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --header-bg: #121212;
+            --header-text: #e0e0e0;
+            --footer-bg: #121212;
+            --footer-text: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        
+        .theme-switch {
+            display: inline-block;
+            position: relative;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .slider:after {
+            content: '☀️';
+            position: absolute;
+            left: 10px;
+            top: 6px;
+            font-size: 12px;
+        }
+        
+        input:checked + .slider:after {
+            content: '🌙';
+            left: auto;
+            right: 10px;
+        }
+        
+        .container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--box-shadow);
+            transition: background-color 0.3s ease;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            margin: 1.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin: 1.2rem 0 0.8rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        ul, ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .nav-item {
+            margin-bottom: 0.8rem;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--box-shadow);
+            transition: background-color 0.3s ease;
+        }
+        
+        .highlight {
+            background-color: var(--highlight-bg);
+            border-left: 4px solid var(--highlight-border);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0 8px 8px 0;
+            transition: background-color 0.3s ease;
+        }
+        
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        pre {
+            background-color: var(--highlight-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .diagram {
+            margin: 2rem 0;
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            transition: background-color 0.3s ease;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo-text {
+            margin-left: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+        
+        .feature-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .feature {
+            flex: 1;
+            min-width: 250px;
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            transition: background-color 0.3s ease;
+        }
+        
+        .feature h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border-color);
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+        }
+        
+        th {
+            background-color: var(--table-header-bg);
+            color: var(--table-header-text);
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--table-row-alt);
+        }
+        
+        .parameter-table td:first-child {
+            font-weight: bold;
+            width: 30%;
+        }
+        
+        .image-gallery {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+        
+        .gallery-item {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem;
+            background-color: var(--card-bg);
+            transition: background-color 0.3s ease;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        
+        .caption {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+        
+        footer {
+            padding: 1rem 2rem;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .theme-switch-wrapper {
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Spheroid Analyzer Documentation</h1>
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <span class="slider"></span>
+            </label>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <span class="logo-text">Spheroid Analyzer</span>
+            </div>
+            <nav>
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="#home" class="nav-link active" data-page="home">Home</a></li>
+                    <li class="nav-item"><a href="#setup" class="nav-link" data-page="setup">Getting Started</a></li>
+                    <li class="nav-item"><a href="#workflow" class="nav-link" data-page="workflow">How It Works</a></li>
+                    <li class="nav-item"><a href="#components" class="nav-link" data-page="components">Technical Components</a></li>
+                    <li class="nav-item"><a href="#troubleshooting" class="nav-link" data-page="troubleshooting">Troubleshooting</a></li>
+                </ul>
+            </nav>
+        </div>
+        
+        <div class="content">
+            <!-- Home Page -->
+            <div class="page active" id="home">
+                <div class="card">
+                    <h1>Welcome to Spheroid Analyzer</h1>
+                    <p>Spheroid Analyzer is a Python script designed to automate the analysis of microscope images of spheroids (3D cell cultures). The script identifies spheroids in images, measures their size, shape, and fluorescence intensity.</p>
+                    
+                    <div class="highlight">
+                        <h3>What This Documentation Covers</h3>
+                        <p>This guide provides comprehensive information about the Spheroid Analyzer script, including how to set it up, how it works under the hood, and how to troubleshoot common issues.</p>
+                    </div>
+                </div>
+                
+                <h2>Key Features</h2>
+                <div class="feature-box">
+                    <div class="feature">
+                        <h3>Automated Detection</h3>
+                        <p>Automatically finds spheroids in microscope images using advanced edge detection.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Precise Measurements</h3>
+                        <p>Measures size, shape, and fluorescence intensity with accurate pixel-to-micron conversion.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Batch Processing</h3>
+                        <p>Analyzes entire experiments with multiple conditions and timepoints in a single run.</p>
+                    </div>
+                </div>
+                
+                <h2>Quick Navigation</h2>
+                <ul>
+                    <li><strong><a href="#setup">Getting Started</a></strong>: Configuration, folder structure, and basic setup</li>
+                    <li><strong><a href="#workflow">How It Works</a></strong>: Step-by-step explanation of the analysis process</li>
+                    <li><strong><a href="#components">Technical Components</a></strong>: Libraries, functions, and technical details</li>
+                    <li><strong><a href="#troubleshooting">Troubleshooting</a></strong>: Common issues and solutions</li>
+                </ul>
+            </div>
+            
+            <!-- Setup Page -->
+            <div class="page" id="setup">
+                <h1>Getting Started</h1>
+                
+                <div class="card">
+                    <h2>Prerequisites</h2>
+                    <p>Before using Spheroid Analyzer, make sure you have:</p>
+                    <ul>
+                        <li>Python 3.6 or newer installed</li>
+                        <li>Required libraries: OpenCV, NumPy, Pandas, Matplotlib, SciPy</li>
+                        <li>Organized microscope images (see folder structure below)</li>
+                    </ul>
+                </div>
+                
+                <h2>Configuration</h2>
+                <p>The script has several key parameters you need to configure at the top of the file:</p>
+                
+                <table class="parameter-table">
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>main_folder_path</td>
+                        <td>Path to the main folder containing experiment subfolders</td>
+                    </tr>
+                    <tr>
+                        <td>output_file_path</td>
+                        <td>Where to save the Excel results (must end with .xlsx)</td>
+                    </tr>
+                    <tr>
+                        <td>one_contour</td>
+                        <td>Set to True to detect only one spheroid per image, False for multiple</td>
+                    </tr>
+                    <tr>
+                        <td>show_images</td>
+                        <td>Set to True to display images during processing</td>
+                    </tr>
+                    <tr>
+                        <td>min_size</td>
+                        <td>Minimum size threshold (in pixels squared)</td>
+                    </tr>
+                    <tr>
+                        <td>max_size</td>
+                        <td>Maximum size threshold (in pixels squared)</td>
+                    </tr>
+                    <tr>
+                        <td>pixel_to_micron</td>
+                        <td>Conversion factor from pixels to micrometers (depends on microscope)</td>
+                    </tr>
+                    <tr>
+                        <td>identifier</td>
+                        <td>Text in filenames that identifies phase contrast images (e.g., "c1")</td>
+                    </tr>
+                    <tr>
+                        <td>t_test</td>
+                        <td>Set to True to perform statistical analysis between conditions</td>
+                    </tr>
+                </table>
+                
+                <div class="highlight">
+                    <h3>Important Note</h3>
+                    <p>The <code>pixel_to_micron</code> value is critical for accurate measurements. Consult your microscope's documentation to find the correct value for your magnification settings.</p>
+                </div>
+                
+                <h2>Folder Structure</h2>
+                <p>The script expects your data to be organized in a specific way:</p>
+                <pre>
+Main Folder/
+├── ConditionA_24h/
+│   ├── image001_c1.tif  (Phase contrast image)
+│   ├── image001_c2.tif  (Fluorescence channel 1)
+│   ├── image001_c3.tif  (Fluorescence channel 2)
+│   └── ...
+├── ConditionA_48h/
+│   └── ...
+├── ConditionB_24h/
+│   └── ...
+└── ...
+                </pre>
+                
+                <h3>Requirements:</h3>
+                <ul>
+                    <li>Each condition folder should follow the naming format: "Condition_TimePoint"</li>
+                    <li>Phase contrast images must contain the identifier (default: "c1")</li>
+                    <li>Fluorescence images should have the same name but with "c2", "c3", etc.</li>
+                </ul>
+                
+                <h2>Running the Script</h2>
+                <ol>
+                    <li>Configure the parameters at the top of the script</li>
+                    <li>Make sure your images are organized correctly</li>
+                    <li>Run the script using Python: <code>python spheroid_analyzer.py</code></li>
+                    <li>If <code>show_images = True</code>, you'll see processing visualizations</li>
+                    <li>Results will be saved to the specified Excel file</li>
+                </ol>
+            </div>
+            
+            <!-- Workflow Page -->
+            <div class="page" id="workflow">
+                <h1>How It Works</h1>
+                
+                <div class="card">
+                    <h2>Analysis Workflow</h2>
+                    <p>Spheroid Analyzer follows a systematic pipeline to detect, measure, and analyze spheroids in microscope images.</p>
+                </div>
+                
+                <div class="diagram card">
+                    <h3>Analysis Pipeline Overview</h3>
+                    <div style="margin-top: 20px;">
+                        <h4>Key Steps in Analysis Pipeline:</h4>
+                        <ol>
+                            <li><strong>Input Processing</strong>: Find folders and images</li>
+                            <li><strong>Image Pre-processing</strong>: Apply Sobel filter, blur, create mask</li>
+                            <li><strong>Contour Detection</strong>: Find and filter potential spheroids</li>
+                            <li><strong>Measurement</strong>: Calculate size, shape, fluorescence intensity</li>
+                            <li><strong>Results Storage</strong>: Save to Excel and generate visualizations</li>
+                        </ol>
+                        
+                        <h4>Filtering Criteria:</h4>
+                        <ul>
+                            <li><strong>Size Check</strong>: Area between min_size and max_size</li>
+                            <li><strong>Circularity Check</strong>: Circularity > 0.5</li>
+                            <li><strong>Solidity Check</strong>: Solidity between 0.4 and 1.8</li>
+                            <li><strong>Aspect Ratio Check</strong>: Ratio between 0.25 and 4</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h2>Analysis Steps in Detail</h2>
+                
+                <h3>1. Folder and File Processing</h3>
+                <ul>
+                    <li>The script begins by identifying all condition folders within the main folder</li>
+                    <li>Folders are sorted by the time suffix in their names</li>
+                    <li>Within each folder, all images containing the identifier (e.g., "c1") are found</li>
+                </ul>
+                
+                <h3>2. Image Pre-processing</h3>
+                <ul>
+                    <li><strong>Sobel Filter</strong>: Applied to enhance edges in the image</li>
+                    <li><strong>Gaussian Blur</strong>: Reduces noise in the image</li>
+                    <li><strong>Thresholding</strong>: Converts the image to black and white using adaptive methods</li>
+                    <li><strong>Morphological Operations</strong>: Cleans up the binary image by filling holes and smoothing edges</li>
+                </ul>
+                
+                <h3>3. Contour Detection</h3>
+                <ul>
+                    <li>The script finds all outlines (contours) in the processed image</li>
+                    <li>Each contour is a potential spheroid</li>
+                    <li>A series of filters is applied to determine which contours are valid spheroids</li>
+                </ul>
+                
+                <h3>4. Contour Filtering</h3>
+                <p>A contour must pass all these tests to be considered a valid spheroid:</p>
+                <ul>
+                    <li><strong>Size Test</strong>: Area must be between min_size and max_size</li>
+                    <li><strong>Circularity Test</strong>: Must have a circularity value > 0.5</li>
+                    <li><strong>Solidity Test</strong>: Must have a solidity between 0.4 and 1.8</li>
+                    <li><strong>Aspect Ratio Test</strong>: Width-to-height ratio must be between 0.25 and 4</li>
+                </ul>
+                
+                <h3>5. Measurements</h3>
+                <p>For each valid spheroid, the script measures:</p>
+                <ul>
+                    <li><strong>Area</strong>: Size in both pixels and square micrometers</li>
+                    <li><strong>Aspect Ratio</strong>: Ratio of width to height</li>
+                    <li><strong>Solidity</strong>: How "solid" the spheroid appears</li>
+                    <li><strong>Fluorescence Intensity</strong>: Average brightness in fluorescence channels</li>
+                </ul>
+                
+                <h3>6. Results Storage</h3>
+                <ul>
+                    <li>All measurements are organized by condition and timepoint</li>
+                    <li>Results are saved to an Excel file with one sheet per condition</li>
+                    <li>Optional statistical analysis (t-tests) can be performed to compare conditions</li>
+                </ul>
+                
+                <h2>Visualization</h2>
+                <p>When <code>show_images = True</code>, the script displays images at various stages of processing:</p>
+                <ul>
+                    <li>Sobel filtered image</li>
+                    <li>Binary mask</li>
+                    <li>Processed mask after morphological operations</li>
+                    <li>Final result with detected contours highlighted</li>
+                </ul>
+                
+                <div class="highlight">
+                    <h3>Key Insight</h3>
+                    <p>The most critical parts of the workflow are the contour filtering steps. If the script isn't detecting spheroids correctly, adjusting the filtering criteria often solves the problem.</p>
+                </div>
+            </div>
+            
+            <!-- Components Page -->
+            <div class="page" id="components">
+                <h1>Technical Components</h1>
+                
+                <div class="card">
+                    <h2>Libraries and Dependencies</h2>
+                    <p>The script relies on several specialized Python libraries to perform its analysis tasks.</p>
+                </div>
+                
+                <h2>Core Libraries</h2>
+                
+                <h3>OpenCV (cv2)</h3>
+                <div class="highlight">
+                    <p><strong>What it is:</strong> A powerful image processing toolkit.</p>
+                    <p><strong>What it does:</strong> Handles image reading, filtering, contour detection, and measurements.</p>
+                    <p><strong>In simple terms:</strong> The "eyes" that see and analyze the images.</p>
+                </div>
+                <p>OpenCV functions used include:</p>
+                <ul>
+                    <li><code>imread</code>: Reads image files from disk</li>
+                    <li><code>findContours</code>: Finds outlines of objects in binary images</li>
+                    <li><code>contourArea</code>: Measures the area of a contour</li>
+                    <li><code>drawContours</code>: Draws contours on images for visualization</li>
+                    <li><code>GaussianBlur</code>: Reduces noise in images</li>
+                    <li><code>Sobel</code>: Enhances edges in images</li>
+                </ul>
+                
+                <h3>NumPy (numpy)</h3>
+                <div class="highlight">
+                    <p><strong>What it is:</strong> A library for numerical computations.</p>
+                    <p><strong>What it does:</strong> Stores and manipulates image data as arrays of numbers.</p>
+                    <p><strong>In simple terms:</strong> The "calculator" that handles the math behind image processing.</p>
+                </div>
+                <p>NumPy functions used include:</p>
+                <ul>
+                    <li><code>zeros_like</code>: Creates arrays filled with zeros</li>
+                    <li><code>uint8</code>: Defines 8-bit unsigned integer data type</li>
+                    <li><code>pi</code>: Mathematical constant used in circularity calculations</li>
+                </ul>
+                
+                <h3>Pandas (pd)</h3>
+                <div class="highlight">
+                    <p><strong>What it is:</strong> A data analysis and manipulation tool.</p>
+                    <p><strong>What it does:</strong> Organizes and stores measurements in tables.</p>
+                    <p><strong>In simple terms:</strong> The "record keeper" that organizes all the results.</p>
+                </div>
+                <p>Pandas functions used include:</p>
+                <ul>
+                    <li><code>DataFrame</code>: Creates tables to store measurements</li>
+                    <li><code>concat</code>: Combines multiple sets of results</li>
+                    <li><code>to_excel</code>: Saves results to Excel files</li>
+                </ul>
+                
+                <h3>Matplotlib (plt)</h3>
+                <div class="highlight">
+                    <p><strong>What it is:</strong> A plotting and visualization library.</p>
+                    <p><strong>What it does:</strong> Creates visual output showing the detected spheroids.</p>
+                    <p><strong>In simple terms:</strong> The "artist" that draws pictures to help you see what's happening.</p>
+                </div>
+                <p>Matplotlib functions used include:</p>
+                <ul>
+                    <li><code>figure</code>: Creates a new figure for visualization</li>
+                    <li><code>subplot</code>: Organizes multiple images in a grid</li>
+                    <li><code>imshow</code>: Displays images</li>
+                    <li><code>savefig</code>: Saves figures to disk</li>
+                </ul>
+                
+                <h3>SciPy (stats)</h3>
+                <div class="highlight">
+                    <p><strong>What it is:</strong> A scientific computing toolkit.</p>
+                    <p><strong>What it does:</strong> Performs statistical tests to compare experimental conditions.</p>
+                    <p><strong>In simple terms:</strong> The "statistician" that tells you if your results are significant.</p>
+                </div>
+                <p>SciPy functions used include:</p>
+                <ul>
+                    <li><code>ttest_ind</code>: Performs t-tests between different conditions</li>
+                </ul>
+                
+                <h2>Custom Functions and Classes</h2>
+                
+                <h3>Key Functions</h3>
+                <table class="parameter-table">
+                    <tr>
+                        <th>Function</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td>process_image_sobel</td>
+                        <td>Applies edge detection to highlight spheroid boundaries</td>
+                    </tr>
+                    <tr>
+                        <td>process_contours</td>
+                        <td>Finds, filters, and measures spheroids in an image</td>
+                    </tr>
+                    <tr>
+                        <td>measure_fluorescence_intensity</td>
+                        <td>Measures brightness in fluorescence channels</td>
+                    </tr>
+                    <tr>
+                        <td>process_folder</td>
+                        <td>Processes all images in one experimental condition</td>
+                    </tr>
+                    <tr>
+                        <td>process_multiple_folders</td>
+                        <td>Coordinates analysis of the entire experiment</td>
+                    </tr>
+                    <tr>
+                        <td>pval_ttest</td>
+                        <td>Performs statistical analysis between conditions</td>
+                    </tr>
+                </table>
+                
+                <h3>ImageCollector Class</h3>
+                <p>A custom class that:</p>
+                <ul>
+                    <li>Collects images during processing</li>
+                    <li>Displays them in a grid layout</li>
+                    <li>Saves them to disk if requested</li>
+                </ul>
+                
+                <h2>Image Analysis Concepts</h2>
+                
+                <h3>Sobel Filter</h3>
+                <p>A mathematical operation that calculates the gradient of pixel intensities, highlighting areas where intensity changes rapidly (edges).</p>
+                
+                <h3>Adaptive Thresholding</h3>
+                <p>A technique that converts a grayscale image to binary (black and white) by comparing each pixel to the average of its neighbors, rather than using a single threshold value for the entire image.</p>
+                
+                <h3>Morphological Operations</h3>
+                <p>Mathematical operations that modify the shape of objects in binary images:</p>
+                <ul>
+                    <li><strong>Closing</strong>: Fills small holes and connects nearby objects</li>
+                    <li><strong>Opening</strong>: Removes small noise and separates objects</li>
+                    <li><strong>Dilation</strong>: Expands objects</li>
+                </ul>
+                
+                <h3>Contour Properties</h3>
+                <ul>
+                    <li><strong>Area</strong>: Number of pixels within the contour</li>
+                    <li><strong>Perimeter</strong>: Length of the contour boundary</li>
+                    <li><strong>Circularity</strong>: How close the shape is to a perfect circle (4π × Area ÷ Perimeter²)</li>
+                    <li><strong>Convex Hull</strong>: The smallest convex shape that contains the contour</li>
+                    <li><strong>Solidity</strong>: Ratio of contour area to its convex hull area</li>
+                </ul>
+                
+                <div class="highlight">
+                    <h3>Technical Insight</h3>
+                    <p>The script combines multiple image processing techniques to achieve robust spheroid detection. The sequence of operations (edge detection → thresholding → morphological operations) is carefully designed to work with a variety of image qualities.</p>
+                </div>
+            </div>
+            
+            <!-- Troubleshooting Page -->
+            <div class="page" id="troubleshooting">
+                <h1>Troubleshooting</h1>
+                
+                <div class="card">
+                    <h2>Common Issues and Solutions</h2>
+                    <p>If the script isn't working as expected, check these common issues and their solutions.</p>
+                </div>
+                
+                <h2>No Spheroids Detected</h2>
+                <div class="highlight">
+                    <h3>Symptoms</h3>
+                    <p>The script runs but doesn't find any valid spheroids, even though they're clearly visible in the images.</p>
+                </div>
+                
+                <h3>Possible Causes and Solutions:</h3>
+                <ol>
+                    <li><strong>Size thresholds are incorrect</strong>
+                        <ul>
+                            <li>Solution: Adjust <code>min_size</code> and <code>max_size</code> parameters</li>
+                            <li>Tip: Turn on <code>show_images</code> to see debug information about contour sizes</li>
+                        </ul>
+                    </li>
+                    <li><strong>Identifier doesn't match your filenames</strong>
+                        <ul>
+                            <li>Solution: Check your image filenames and update the <code>identifier</code> parameter</li>
+                        </ul>
+                    </li>
+                    <li><strong>Image contrast is too low</strong>
+                        <ul>
+                            <li>Solution: Pre-process your images to enhance contrast, or adjust the code to use stronger edge enhancement</li>
+                        </ul>
+                    </li>
+                    <li><strong>Filtering criteria are too strict</strong>
+                        <ul>
+                            <li>Solution: Modify the circularity, solidity, or aspect ratio thresholds in the <code>process_contours</code> function</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h2>Wrong Spheroids Detected</h2>
+                <div class="highlight">
+                    <h3>Symptoms</h3>
+                    <p>The script detects objects, but they're not the spheroids you're interested in, or it's detecting artifacts.</p>
+                </div>
+                
+                <h3>Possible Causes and Solutions:</h3>
+                <ol>
+                    <li><strong>Size thresholds are too permissive</strong>
+                        <ul>
+                            <li>Solution: Narrow the range between <code>min_size</code> and <code>max_size</code></li>
+                        </ul>
+                    </li>
+                    <li><strong>Debris or artifacts in images</strong>
+                        <ul>
+                            <li>Solution: Increase the <code>min_size</code> parameter or make the circularity threshold higher</li>
+                        </ul>
+                    </li>
+                    <li><strong>Multiple spheroids in each image</strong>
+                        <ul>
+                            <li>Solution: Set <code>one_contour = False</code> if you want to detect all spheroids</li>
+                            <li>Or keep <code>one_contour = True</code> if you only want the largest one</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h2>Measurements Seem Incorrect</h2>
+                <div class="highlight">
+                    <h3>Symptoms</h3>
+                    <p>The script detects spheroids but the measurements don't match what you expect.</p>
+                </div>
+                
+                <h3>Possible Causes and Solutions:</h3>
+                <ol>
+                    <li><strong>Incorrect pixel-to-micron conversion</strong>
+                        <ul>
+                            <li>Solution: Check your microscope's documentation and update the <code>pixel_to_micron</code> parameter</li>
+                            <li>Tip: Calibrate using an object of known size</li>
+                        </ul>
+                    </li>
+                    <li><strong>Contour detection is including too much or too little area</strong>
+                        <ul>
+                            <li>Solution: Adjust the thresholding and morphological operations in the <code>process_contours</code> function</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h2>Script Crashes or Shows Errors</h2>
+                <div class="highlight">
+                    <h3>Symptoms</h3>
+                    <p>The script terminates with an error message instead of completing.</p>
+                </div>
+                
+                <h3>Possible Causes and Solutions:</h3>
+                <ol>
+                    <li><strong>Missing libraries</strong>
+                        <ul>
+                            <li>Solution: Install required libraries using pip: <code>pip install opencv-python numpy pandas matplotlib scipy</code></li>
+                        </ul>
+                    </li>
+                    <li><strong>File path errors</strong>
+                        <ul>
+                            <li>Solution: Check that all paths are correct and use raw strings (prefix with r) for Windows paths</li>
+                        </ul>
+                    </li>
+                    <li><strong>Unsupported image formats</strong>
+                        <ul>
+                            <li>Solution: Ensure your images are in a format OpenCV can read (.tif, .jpg, .png)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Permission errors when saving results</strong>
+                        <ul>
+                            <li>Solution: Check that you have write permission to the output directory</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h2>Adapting to a New Microscope</h2>
+                <p>When switching to a new microscope, you'll typically need to adjust:</p>
+                <ol>
+                    <li><strong>pixel_to_micron value</strong>: Get this from the new microscope's specifications</li>
+                    <li><strong>Channel identifiers</strong>: Update the <code>identifier</code> parameter and channel references in the code</li>
+                    <li><strong>Size thresholds</strong>: May need adjustment if magnification has changed</li>
+                    <li><strong>Image preprocessing</strong>: Different microscopes produce images with different characteristics</li>
+                </ol>
+                
+                <div class="highlight">
+                    <h3>Expert Tip</h3>
+                    <p>When adapting to a new microscope, start by processing a few sample images with <code>show_images = True</code>. This will help you understand how the new images are being processed and what adjustments might be needed.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Spheroid Analyzer Documentation | Created for Lara's Lab | 2025</p>
+    </footer>
+    
+    <script>
+        // Theme switcher - simplified to work in sandboxed environments
+        const checkbox = document.getElementById('checkbox');
+        
+        // Handle theme toggle without localStorage
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        });
+        
+        // Navigation handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get the page id from the data attribute
+                    const pageId = this.getAttribute('data-page');
+                    
+                    // Hide all pages
+                    pages.forEach(page => {
+                        page.classList.remove('active');
+                    });
+                    
+                    // Show the selected page
+                    document.getElementById(pageId).classList.add('active');
+                    
+                    // Update active link
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Update URL hash
+                    window.location.hash = pageId;
+                });
+            });
+            
+            // Check if URL has a hash and navigate to that page
+            if (window.location.hash) {
+                const pageId = window.location.hash.substring(1);
+                const link = document.querySelector(`.nav-link[data-page="${pageId}"]`);
+                if (link) {
+                    link.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
