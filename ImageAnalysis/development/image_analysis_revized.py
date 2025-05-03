@@ -7,8 +7,8 @@ from scipy import stats
 
 #######################################
 # Change only here
-main_folder_path = r'ImageAnalysis\NIS'
-output_file_path = r'ImageAnalysis\NIS\Msgn1_test.xlsx'  # include .xlsx
+main_folder_path = r'C:\Users\mrgav\Desktop\Lara\ImageAnalysis\NIS'
+output_file_path = r'C:\Users\mrgav\Desktop\Lara\ImageAnalysis\NIS\Msgn1_test.xlsx'  # include .xlsx
 
 one_contour = True  # Do you only have one organoid in each image? True or False
 show_images = True  # Do you want to see the images as the code runs? True or False
